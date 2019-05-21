@@ -27,6 +27,16 @@ and then activate this environment:
 conda activate vclimber
 ```
 
+### Linux
+
+On Linux, libGL.so is needed by **OpenCV**. If you want to run VersionClimber on the cloud,
+install libGL.so using (on Ubuntu):
+```bash
+sudo apt install libgl1-mesa-glx
+```
+
+## Run VersionClimber
+
 Now, to run VersionClimber, just type ::
 
 ```bash
@@ -93,78 +103,86 @@ In this example, we depends on two packages: [openalea.deploy](http://github.com
 VersionClimber needs modified conda recipes to build all the packages together locally from different versions of git source code.
 All the modified recipes are located in the recipes directory.
 
-### openalea.deploy recipe
+### [openalea.deploy](recipes/deploy/meta.yaml.tpl) recipe
 
 First, we get the [openalea.deploy recipe](https://github.com/openalea/deploy) from its git repository.
 
-The *meta.yaml* file is copied into a template file (named [*meta.yaml.tpl*](./recipes/openalea.deploy/meta.yaml.tpl)) and is modified as follow:
-```yaml
-
-...
-```
-
-The **package** and the **source** sections are modified:
-- **package**: the **version** variable must be equal to **"$version"**. VersionClimber will replaced the **"$version"** variable by the git tag or the git commit value.
-- **source**: the **url** value is replaced by a local location where VersionClimber will clone the boost package (i.e. **../../.vclimb/openalea.deploy**).
-
-
-
-### openalea.phenomenal recipe
-
-The [Phenomenal recipe](https://github.com/openalea/phenomenal) is retrieved from its github repository.
-
-We simplify it by removing the header and the tests that can be done in the driver file. The [meta.yaml.tpl](./recipes/protobuf/meta.yaml.tpl) looks like :
-
+The *meta.yaml* file is copied into a template file (named [*meta.yaml.tpl*](recipes/deploy/meta.yaml.tpl)) and is modified as follow:
 ```yaml
 # REMOVE THESE LINES
-# {% set name = "protobuf" %}
-# {% set version = "3.2.0" %}
-# {% set sha256 = "2a25c2b71c707c5552ec9afdfb22532a93a339e1ca5d38f163fe4107af08c54c" %}
+# {% set version = "2.1.7" %}
 
 package:
-  name: "protobuf"
+  name: openalea.deploy
   # REPLACE
-  version: {{ version }}
+  # version: {{ version }}
   # BY VERSIONCLIMBER template flag
   version : "$version"
 
 source:
   # REPLACE
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://github.com/google/protobuf/archive/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  # BY new VERSIONCLIMBER protobuf location
-  path : ../../.vclimb/protobuf
+  # path: ..
+  # BY new VERSIONCLIMBER deploy location
+  path: ../../.vclimb/openalea.deploy
 
 build:
-  features:
+  preserve_egg_dir: True
+  number: 0
+  script: python setup.py install
 
+requirements:
+  build:
+    - python {{PY_VER}}* [not win]
+    - python {{PY_VER}}  [win]
+    - setuptools
+    - pywin32 # [win]
+    - six
+  run:
+    - python {{PY_VER}}* [not win]
+    - python {{PY_VER}}  [win]
+    - setuptools
+    - pywin32 # [win]
+    - six
+    - path.py
+
+# REMOVE ALL THE TEST SECTION
+# test:
+#   imports:
+#     - openalea.deploy
 ...
-# REMOVE ALL THE TEST  SECTION
+```
 
-#test:
-#  commands:
-#    - protoc --help
-#    - test -f ${PREFIX}/lib/libprotobuf.a                           # [unix]
-#    - test -f ${PREFIX}/lib/libprotobuf.dylib                       # [osx]
-#    - test -f ${PREFIX}/lib/libprotobuf.so                          # [linux]
-#    - if not exist %PREFIX%\\Library\\lib\\libprotobuf.lib exit 1   # [win]
-#  imports:
-#    - google
-#    - google.protobuf
-#    - google.protobuf.internal
-#    - google.protobuf.pyext
+The **package**, the **source**, and the **test** sections are modified:
+- **package**: the **version** variable must be equal to **"$version"**. VersionClimber will replaced the **"$version"** variable by the git tag or the git commit value.
+- **source**: the **url** value is replaced by a local location where VersionClimber will clone the boost package (i.e. **../../.vclimb/openalea.deploy**).
+- **test**: all the section is removed to avoid testing the package independently of the current configuration.
 
-about:
-    home: https://developers.google.com/protocol-buffers/
-    license: New BSD License
-    summary: Protocol Buffers - Google's data interchange format
+
+
+### [openalea.phenomenal](recipes/phenomenal/meta.yaml.tpl) recipe
+
+The [Phenomenal recipe](https://github.com/openalea/phenomenal/blob/master/conda/meta.yaml) is retrieved from its github repository.
+
+We simplify it by changing the version, the source path and removing the tests. The [meta.yaml.tpl](recipes/phenomenal/meta.yaml.tpl) looks like :
+
+```yaml
+package:
+  name: openalea.phenomenal
+  # REPLACE
+  # version: {{ version }}
+  # BY VERSIONCLIMBER template flag
+  version : "$version"
+
+source:
+  # REPLACE
+  # path: ..
+  # BY new VERSIONCLIMBER phenomenal location
+  path: ../../.vclimb/openalea.phenomenal
+
+# COMMENT THE TEST SECTION
+# test:
 
 ...
 ```
 
 
-
-## Invocation of VersionClimber
-
-vclimb -a -- will fetch the packages from git, retrieve all the versions, install each configuration (set of package-version pairs) suggested by the Version Climber software, then invoke the run part of the config.yaml on that installed configuration. The output is configuration that works sorted based on the priorities in config.yaml
