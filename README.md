@@ -49,8 +49,8 @@ vclimb -va
 
 To reproduce an execution by using VersionClimber, you will create a directory containing a file and a directory.
 This current directory contains:
-- **config.yaml:** the VersionClimber configuration file
-- **recipes: ** a directory that contains one recipe per dependency package.
+- **[config.yaml](config.yaml)**: the VersionClimber configuration file
+- **[recipes](recipes)**: a directory that contains one recipe per dependency package.
 
 
 ## Definition of a simple configuration file
@@ -80,15 +80,15 @@ The *packages* section list the different packages that will be tested by the ru
 If *hierarchy* is `major`, `minor`, or `patch`, the versions of the tags will be selected for that indentation level and higher. Otherwise, (`commit`) all the commits of the origin or master branch will be tested by VersionClimber. In this example, because minor packages are of the  form x.y, VersionClimber will take the most recent patch associated with each x.y. So, if a package is identified as 5.4.3 and there is no higher patch number among the patches that begin with 5.4, then VersionClimber will select 5.4.3.
 
 
-### Run command in config.yaml
+### Run command in [config.yaml](config.yaml)
 
 This is the script (usually) after run: in that file. In our example,
-`python test_function.py`
+`nosetests -w .vclimb/openalea.phenomenal/test`
 
 ## Adaptation of conda recipes for Version Climber
 
 Conda recipes of major packages can be found on different repository, such as [conda-recipes](https://github.com/conda/conda-recipes).
-In this example, we depends on two packages: [boost](http://www.boost.org) and [protobuf](https://developers.google.com/protocol-buffers).
+In this example, we depends on two packages: [openalea.deploy](http://github.com/openalea/deploy) and [openalea.phenomenal](http://github.com/openalea/deploy).
 
 VersionClimber needs modified conda recipes to build all the packages together locally from different versions of git source code.
 All the modified recipes are located in the recipes directory.
