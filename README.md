@@ -1,70 +1,167 @@
-# Tutorial: Testing conda packages with Version Climber
+# Tutorial: Multi-Lingual Case study with VersionClimber: Phenomenal
 
 ## Overview
-In this tutorial, you will learn how to use VersionClimber when your script depends on conda packages that are already available (i.e. you don't need to create new recipes).
-The first step is to define a configuration file which will include the priorities of different packages.
-Then, you will have to adapt the original conda recipes.
-Finally, VersionClimber will automatically find a configuration that works having the highest version of each package in (package) priority order. So the highest version possible of the highest priority package, then the highest version of the next highest priority package etc.
+In this tutorial, you will learn how to use VersionClimber when packages comes from multiple languages (e.g.C++ and Python). In our case, this repository aims at testing Phenomenal, a package built to process biological image data and extract 3D structural information to infer genotype to phenotype relationship.
+
+A Python library, named Phenomenal, has been developed and depends on a set of widely used libraries for scientific visualisation and image processing such as VTK and OpenCV. While these libraries have Python interfaces, they are implemented in C++ for efficiency. However, they are know to be difficult to install due to binary conflicts between lots of dependencies.
+
+Moreover, in this example, we rely on some code that is not available on any public conda channel. For each configuration, we will then rebuild the local packages. Then, to test the status of each configuraion, rather than executing a notebook, we will run the full test suite.
+
+Phenomenal depends on Python packages such as Python, NumPy, SciPy, MatPlotLib, NetworkX, Pandas, Scikit-Learn and Scikit-Image.
+It depends also on utilities such as nose, coverage or openalea.deploy.
+As noted above, it also depends on more complex scientific packages such as OpenCV and VTK.
 
 ## Before you start
 
-You should already have installed [Miniconda](https://conda.io/docs/install/quick.html) or
-[Anaconda](https://docs.continuum.io/anaconda/install) for Python 2.7.
+You should already have installed [Miniconda](https://conda.io) or
+[Anaconda](https://docs.continuum.io/anaconda/install).
 
 Create an new conda environment:
 
 ```bash
-conda create -n vclimber -y python
+conda create -n vclimber -c versionclimber versionclimber -y
 ```
-
-Install VersionClimber:
+and then activate this environment:
 
 ```bash
-conda install -c versionclimber versionclimber
+conda create -n vclimber -c versionclimber versionclimber -y
 ```
 
 Now you are ready to define a configuration file for VersionClimber.
 
 ## Classical layout of a project
 
-To reproduce an execution by using VersionClimber, you will create a directory containing two files and a directory.
-Let's name this directory tutorial. It will contain:
+To reproduce an execution by using VersionClimber, you will create a directory containing a file and a directory.
+This current directory contains:
 - **config.yaml:** the VersionClimber configuration file
-- **test_function.py:** a python file (or another script) to test the validity of one configuration
-- **recipes: ** a directory that will contain one recipe per dependency package.
+- **recipes: ** a directory that contains one recipe per dependency package.
+
 
 ## Definition of a simple configuration file
 
 VersionClimber uses the declarative configuration file to indicate which packages have to be tested and how.
 
-In this section you are going to define a configuration file that uses two rather complex conda packages, namely boost and protobuf.
+In this section you are going to define a configuration file that uses 16 conda packages with different levels of complexity. Some are pure Python, while others are C/C++ packages with potential binary compatibility problems.
 
-The configuration file [config.yaml](https://github.com/pradal/VersionClimber/blob/conda/example/tuto_conda01/config.yaml) is as follow (here boost has a higher priority than protobuf because boost comes first):
+The configuration file *config.yaml* is as follow (here openalea.deploy has a higher priority than openalea.phenomenal because openalea.deploy comes first):
 ```yaml
 packages:
-    - name      : boost
+    - name      : openalea.deploy
       vcs       : git
-      url       : https://github.com/boostorg/boost.git
-      cmd       : conda build recipes/boost
+      url       : https://github.com/openalea/deploy.git
+      build_cmd : conda build
+      cmd       : conda install -y --use-local
       conda     : True
-      recipe    : recipes/boost
-      hierarchy : minor
+      recipe    : recipes/deploy
+      hierarchy : patch
+      supply    : minor
 
-    - name      : protobuf
+    - name      : openalea.phenomenal
       vcs       : git
-      url       : https://github.com/google/protobuf.git
-      cmd       : conda build recipes/protobuf
+      url       : https://github.com/openalea/phenomenal.git
+      build_cmd : conda build
+      cmd       : conda install -y --use-local
       conda     : True
-      recipe    : recipes/protobuf
-      hierarchy : minor
+      recipe    : recipes/phenomenal
+      hierarchy : patch
+      supply    : minor
+
+    - name      : nose
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : coverage
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : major
+
+    - name      : pandas
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : vtk
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : opencv
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : networkx
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : major
+
+    - name      : scikit-image
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : scikit-learn
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : scipy
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : cython
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : numba
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : numpy
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : matplotlib
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : patch
+
+    - name      : python
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : major
+
 
 run:
-    - python test_function.py
+    - nosetests -w .vclimb/openalea.phenomenal/test
+
+post: conda env export > environment.yml
 ```
 
-It is divided into two sections, namely **packages** and **run**:
+It is divided into four sections, namely **pre**, **packages**, **run**, and **post**:
+- **pre** :
 - **packages:** list the different packages, their location (e.g. git repository), how to build them and which git commit or tags will be considered (in hierarchy, as explained below).
 - **run:** indicate how to test the different packages together to know if one combination is valid. Typically (as in this example), this will be the name of a driver file.
+- **post**:
 
 ### Packages
 
@@ -92,43 +189,25 @@ In this example, we depends on two packages: [boost](http://www.boost.org) and [
 VersionClimber needs modified conda recipes to build all the packages together locally from different versions of git source code.
 All the modified recipes are located in the recipes directory.
 
-### boost recipe
+### openalea.deploy recipe
 
-First, we get the [boost recipe](https://github.com/conda/conda-recipes/tree/master/boost) from conda-recipes.
+First, we get the [openalea.deploy recipe](https://github.com/openalea/deploy) from its git repository.
 
-The *meta.yaml* file is copied into a template file (named [*meta.yaml.tpl*](./recipes/boost/meta.yaml.tpl)) and is modified as follow:
+The *meta.yaml* file is copied into a template file (named [*meta.yaml.tpl*](./recipes/openalea.deploy/meta.yaml.tpl)) and is modified as follow:
 ```yaml
-package:
-  name: boost
-  # OLD RECIPE version (remove it)
-  version: 1.61.0 # To be replaced by:
-  # NEW VersionClimber version
-  version: "$version"
-
-source:
-  # OLD SOURCE LOCATION (remove it)
-  fn:  boost_1_61_0.tar.bz2
-  url: http://sourceforge.net/projects/boost/files/boost/1.61.0/boost_1_61_0.tar.bz2
-  md5: 6095876341956f65f9d35939ccea1a9f
-
-  # NEW VersionClimber SOURCE LOCATION
-  path : ../../.vclimb/boost
-
-build:
-  features:
 
 ...
 ```
 
 The **package** and the **source** sections are modified:
 - **package**: the **version** variable must be equal to **"$version"**. VersionClimber will replaced the **"$version"** variable by the git tag or the git commit value.
-- **source**: the **url** value is replaced by a local location where VersionClimber will clone the boost package (i.e. **../../.vclimb/boost**).
+- **source**: the **url** value is replaced by a local location where VersionClimber will clone the boost package (i.e. **../../.vclimb/openalea.deploy**).
 
 
 
-### Protobuf recipe
+### openalea.phenomenal recipe
 
-The [Protobuf recipe](https://github.com/conda-forge/protobuf-feedstock/blob/master/recipe) is retrieved from [conda-forge](https://github.com/conda-forge).
+The [Phenomenal recipe](https://github.com/openalea/phenomenal) is retrieved from its github repository.
 
 We simplify it by removing the header and the tests that can be done in the driver file. The [meta.yaml.tpl](./recipes/protobuf/meta.yaml.tpl) looks like :
 

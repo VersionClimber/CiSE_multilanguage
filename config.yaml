@@ -1,3 +1,6 @@
+pre:
+    - conda install -n base conda-build -y
+
 packages:
     - name      : openalea.deploy
       vcs       : git
@@ -106,6 +109,7 @@ packages:
 
 run:
     - nosetests -w .vclimb/openalea.phenomenal/test
-    #- jupyter nbconvert --ExecutePreprocessor.timeout=60 --to notebook --execute ligo/index.ipynb
-post: conda env export > environment.yml
+
+post:
+    - conda env export > environment.yml
 
