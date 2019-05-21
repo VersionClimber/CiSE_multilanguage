@@ -27,12 +27,12 @@ and then activate this environment:
 conda activate vclimber
 ```
 
-### Linux
+### OpenGL on Linux
 
 On Linux, libGL.so is needed by **OpenCV**. If you want to run VersionClimber on the cloud,
 install libGL.so using (on Ubuntu):
 ```bash
-sudo apt install libgl1-mesa-glx
+sudo apt-get install libgl1-mesa-glx
 ```
 
 ## Run VersionClimber
