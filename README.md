@@ -24,10 +24,26 @@ conda create -n vclimber -c versionclimber versionclimber -y
 and then activate this environment:
 
 ```bash
-conda create -n vclimber -c versionclimber versionclimber -y
+conda activate vclimber
 ```
 
-Now you are ready to define a configuration file for VersionClimber.
+Now, to run VersionClimber, just type ::
+
+```bash
+vclimb -a
+```
+
+To obtain the documentation, just type:
+
+```bash
+vclimb -h
+```
+
+If you want to show the list of available versions for each package, run:
+
+```bash
+vclimb -va
+```
 
 ## Classical layout of a project
 
@@ -41,127 +57,15 @@ This current directory contains:
 
 VersionClimber uses the declarative configuration file to indicate which packages have to be tested and how.
 
-In this section you are going to define a configuration file that uses 16 conda packages with different levels of complexity. Some are pure Python, while others are C/C++ packages with potential binary compatibility problems.
+In this section you are going to define a configuration file [config.yaml](config.yaml) that uses 16 conda packages with different levels of complexity.
+Some are pure Python, while others are C/C++ packages with potential binary compatibility problems.
 
-The configuration file *config.yaml* is as follow (here openalea.deploy has a higher priority than openalea.phenomenal because openalea.deploy comes first):
-```yaml
-packages:
-    - name      : openalea.deploy
-      vcs       : git
-      url       : https://github.com/openalea/deploy.git
-      build_cmd : conda build
-      cmd       : conda install -y --use-local
-      conda     : True
-      recipe    : recipes/deploy
-      hierarchy : patch
-      supply    : minor
-
-    - name      : openalea.phenomenal
-      vcs       : git
-      url       : https://github.com/openalea/phenomenal.git
-      build_cmd : conda build
-      cmd       : conda install -y --use-local
-      conda     : True
-      recipe    : recipes/phenomenal
-      hierarchy : patch
-      supply    : minor
-
-    - name      : nose
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : coverage
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : major
-
-    - name      : pandas
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : vtk
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : opencv
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : networkx
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : major
-
-    - name      : scikit-image
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : scikit-learn
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : scipy
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : cython
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : numba
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : numpy
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : matplotlib
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : patch
-
-    - name      : python
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : major
-
-
-run:
-    - nosetests -w .vclimb/openalea.phenomenal/test
-
-post: conda env export > environment.yml
-```
 
 It is divided into four sections, namely **pre**, **packages**, **run**, and **post**:
-- **pre** :
+- **pre** (Optional): a set of commands to execute before running VersionClimber. Here, we install the conda build package to be able to build new conda packages for each configuration.
 - **packages:** list the different packages, their location (e.g. git repository), how to build them and which git commit or tags will be considered (in hierarchy, as explained below).
 - **run:** indicate how to test the different packages together to know if one combination is valid. Typically (as in this example), this will be the name of a driver file.
-- **post**:
+- **post** (Optional): a command run at the end of the process, when VersionClimber has found the up-to-date package combination. Here, we export the conda environment into a file to be able to recreate it on another computer.
 
 ### Packages
 
@@ -263,4 +167,4 @@ about:
 
 ## Invocation of VersionClimber
 
-vclimb -- will fetch the packages from git, retrieve all the versions, install each configuration (set of package-version pairs) suggested by the Version Climber software, then invoke the run part of the config.yaml on that installed configuration. The output is configuration that works sorted based on the priorities in config.yaml
+vclimb -a -- will fetch the packages from git, retrieve all the versions, install each configuration (set of package-version pairs) suggested by the Version Climber software, then invoke the run part of the config.yaml on that installed configuration. The output is configuration that works sorted based on the priorities in config.yaml
