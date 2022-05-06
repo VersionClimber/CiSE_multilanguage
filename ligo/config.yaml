@@ -45,7 +45,7 @@ packages:
 
     - name      : python
       vcs       : conda
-      cmd       : conda install -y
+      cmd       : conda install -y -S
       hierarchy : patch
       supply    : minor
 
