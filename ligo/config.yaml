@@ -48,6 +48,7 @@ packages:
       cmd       : conda install -y -S
       hierarchy : patch
       supply    : minor
+      version   : 3.7.0
 
 
 run:
