@@ -1,4 +1,4 @@
-pre: git clone https://github.com/pradal/ligo-binder.git ligo
+pre: git clone https://github.com/minrk/ligo-binder.git ligo
 
 packages:
     - name      : scipy
@@ -13,15 +13,9 @@ packages:
       hierarchy : patch
       supply    : minor
 
-    - name      : h5py
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
     - name      : seaborn
       vcs       : conda
-      cmd       : conda install -y --no-deps
+      cmd       : conda install -y 
       hierarchy : patch
       supply    : minor
 
@@ -43,11 +37,17 @@ packages:
       hierarchy : patch
       supply    : minor
 
-    - name      : python
+    - name      : h5py
       vcs       : conda
       cmd       : conda install -y
       hierarchy : patch
       supply    : major
+
+    - name      : python
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
 
 
 run:
