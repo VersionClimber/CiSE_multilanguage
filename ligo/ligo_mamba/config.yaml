@@ -1,0 +1,65 @@
+pre: git clone https://github.com/minrk/ligo-binder.git ligo
+
+packages:
+    - name      : scipy
+      vcs       : conda
+      conda     : mamba
+      cmd       : mamba install -y
+      hierarchy : patch
+      supply    : minor
+
+    - name      : numpy
+      vcs       : conda
+      cmd       : mamba install -y
+      conda     : mamba
+      hierarchy : patch
+      supply    : minor
+
+    - name      : seaborn
+      vcs       : conda
+      cmd       : mamba install -y
+      conda     : mamba
+      hierarchy : patch
+      supply    : minor
+
+    - name      : notebook
+      vcs       : conda
+      cmd       : mamba install -y
+      conda     : mamba
+      hierarchy : patch
+      supply    : minor
+
+    - name      : nbconvert
+      vcs       : conda
+      cmd       : mamba install -y
+      conda     : mamba
+      hierarchy : patch
+      supply    : minor
+
+    - name      : matplotlib
+      vcs       : conda
+      cmd       : mamba install -y
+      conda     : mamba
+      hierarchy : patch
+      supply    : minor
+
+    - name      : h5py
+      vcs       : conda
+      cmd       : mamba install -y
+      conda     : mamba
+      hierarchy : patch
+      supply    : minor
+
+    - name      : python
+      vcs       : conda
+      cmd       : mamba install -y
+      conda     : mamba
+      hierarchy : patch
+      supply    : minor
+      version   : 3.6.0
+
+
+run:
+    - jupyter-nbconvert --ExecutePreprocessor.timeout=60 --to notebook --execute ligo/index.ipynb
+
+post: conda env export > environment.yml
