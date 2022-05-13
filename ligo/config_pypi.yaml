@@ -1,0 +1,50 @@
+pre: git clone https://github.com/minrk/ligo-binder.git ligo
+
+packages:
+    - name      : scipy
+      vcs       : pypi
+      hierarchy : patch
+      supply    : minor
+      version   : 0.13.0
+
+    - name      : numpy
+      vcs       : pypi
+      hierarchy : patch
+      supply    : minor
+
+    - name      : seaborn
+      vcs       : pypi
+      hierarchy : patch
+      supply    : minor
+
+    - name      : notebook
+      vcs       : pypi
+      hierarchy : patch
+      supply    : minor
+
+    - name      : nbconvert
+      vcs       : pypi
+      hierarchy : patch
+      supply    : minor
+
+    - name      : matplotlib
+      vcs       : pypi
+      hierarchy : patch
+      supply    : minor
+
+    - name      : h5py
+      vcs       : pypi
+      hierarchy : patch
+      supply    : minor
+
+#    - name      : python
+#      vcs       : pypi
+#      hierarchy : patch
+#      supply    : minor
+#      version   : 3.6.0
+
+
+run:
+    - jupyter-nbconvert --ExecutePreprocessor.timeout=60 --to notebook --execute ligo/index.ipynb
+
+post: conda env export > environment.yml
