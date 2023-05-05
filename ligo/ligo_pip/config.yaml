@@ -2,13 +2,13 @@ pre: git clone https://github.com/minrk/ligo-binder.git ligo
 
 packages:
     - name      : scipy
-      vcs       : conda
+      vcs       : pypi
       hierarchy : patch
       supply    : minor
       version   : 1.0.0
 
     - name      : numpy
-      vcs       : conda
+      vcs       : pypi
       hierarchy : patch
       supply    : minor
 
