@@ -5,7 +5,7 @@ packages:
       vcs       : conda
       hierarchy : patch
       supply    : minor
-      version   : 0.13.0
+      version   : 1.0.0
 
     - name      : numpy
       vcs       : conda
