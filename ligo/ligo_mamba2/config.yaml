@@ -48,7 +48,7 @@ packages:
       cmd       : mamba install -y
       conda     : mamba
       hierarchy : patch
-      supply    : major
+      supply    : minor
 
     - name      : python
       vcs       : conda
