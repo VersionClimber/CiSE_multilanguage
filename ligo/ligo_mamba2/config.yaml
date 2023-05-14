@@ -14,6 +14,7 @@ packages:
       conda     : mamba
       hierarchy : patch
       supply    : minor
+      version   : 0.11.0
 
     - name      : notebook
       vcs       : conda
@@ -26,8 +27,9 @@ packages:
       vcs       : conda
       cmd       : mamba install -y
       conda     : mamba
-      hierarchy : minor
-      supply    : major
+      hierarchy : patch
+      supply    : minor
+      version   : 3.5.2
 
     - name      : scipy
       vcs       : conda
@@ -35,6 +37,7 @@ packages:
       cmd       : mamba install -y
       hierarchy : patch
       supply    : minor
+      version   : 1.8.0
 
     - name      : numpy
       vcs       : conda
@@ -42,6 +45,7 @@ packages:
       conda     : mamba
       hierarchy : patch
       supply    : minor
+      version   : 1.16.0
 
     - name      : h5py
       vcs       : conda
