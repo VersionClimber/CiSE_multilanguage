@@ -1,4 +1,4 @@
-pre: git clone https://github.com/minrk/ligo-binder.git ligo
+pre: git clone https://github.com/minrk/ligo-binder.git ligo; cd ligo
 
 packages:
     - name      : ipython
@@ -49,6 +49,6 @@ packages:
 
 
 run:
-    - cd ligo; python LOSC_Event_tutorial.py; cd ..
+    - python LOSC_Event_tutorial.py
 
-post: conda env export > environment.yml
+post: cd ..; conda env export > environment.yml
