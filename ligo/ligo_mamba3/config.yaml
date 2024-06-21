@@ -49,6 +49,6 @@ packages:
 
 
 run:
-    - python LOSC_Event_tutorial.py
+    - ipython LOSC_Event_tutorial.py
 
 post: cd ..; conda env export > environment.yml
