@@ -1,41 +1,32 @@
-pre: git clone https://github.com/minrk/ligo-binder.git ligo
+pre: git clone https://github.com/pradal/ligo-binder.git ligo
 
 packages:
-    - name      : scipy
+    - name      : ipython
       vcs       : conda
       cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : numpy
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : seaborn
-      vcs       : conda
-      cmd       : conda install -y 
-      hierarchy : patch
-      supply    : minor
-
-    - name      : notebook
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
-
-    - name      : nbconvert
-      vcs       : conda
-      cmd       : conda install -y
-      hierarchy : patch
-      supply    : minor
+      hierarchy : minor
+      supply    : major
 
     - name      : matplotlib
       vcs       : conda
       cmd       : conda install -y
       hierarchy : patch
       supply    : minor
+      version   : 3.5.2
+  
+    - name      : scipy
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+      version   : 1.8.0
+  
+    - name      : numpy
+      vcs       : conda
+      cmd       : conda install -y
+      hierarchy : patch
+      supply    : minor
+      version   : 1.16.0
 
     - name      : h5py
       vcs       : conda
@@ -48,10 +39,10 @@ packages:
       cmd       : conda install -y -S
       hierarchy : patch
       supply    : minor
-      version   : 3.6.0
+      version   : 3.7.0
 
 
 run:
-    - jupyter-nbconvert --ExecutePreprocessor.timeout=60 --to notebook --execute ligo/index.ipynb
+    - ipython ligo/LOSC_Event_tutorial.py
 
 post: conda env export > environment.yml
